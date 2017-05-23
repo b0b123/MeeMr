@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Meemr</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/template.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand">Meemr</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+		    <!--Tabs -->
+            <li class="active"><a href="#recent" data-toggle="tab">Recent</a></li>
+            <li><a href="#upload" data-toggle="tab">Upload</a></li>
+            <li><a href="#account" data-toggle="tab">Account</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+	<!--Tab divs -->
+    <div class="container tab-content">
+
+      <div id="recent" class="template tab-pane active">
+        <h1>Recent</h1>
+		<div id="recentPost"></div>
+      </div>
+
+      <div id="upload" class="template tab-pane">
+        <h1>Upload</h1>
+		<form id="uploadForm">
+			<p>Title: <input name="title" type="text"></p>
+			
+			<ul class="list-inline">
+			  <li><input class="btn btn-primary" id="newPostFile" name="file" type="file" accept="image/*"></li>
+			  <li><div id="newPostFileRemove" class="btn btn-danger">x</div></li>
+			</ul>
+			
+			<div class="btn btn-primary" id="newPostSubmit">Upload</div>
+		</form>
+		<br>
+		<p id="status"></p>
+      </div>
+	  
+      <div id="account" class="template tab-pane">
+        <h1>Account</h1>
+		<p1>TODO</p1>
+      </div>
+	  
+    </div><!-- /.container -->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+	
+	<script src="js/app.js"></script>
+  </body>
+</html>
