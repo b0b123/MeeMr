@@ -1,30 +1,32 @@
-var jsonfile = require('jsonfile')
+var db = require('./database')
 
 module.exports = {
-	create: function(params) {		
-		params.id = (Math.random()+'').split('.')[1]
-		console.log('Creating ' + params.id)
-		
-		this.save(params)
-		
-		return params.id
+	create: function(params, callback) {				
+		this.save(params, function(post) {
+			callback(post)
+		})
 	},
 	
-	save: function(params) {
-		jsonfile.writeFile('posts/' + params.id + '.json', params, function (err) {
-			if(err != null) {
-				console.error(err)
-			}
-		})
-		
-		console.log('Saved ' + params.id)
+	save: function(params, callback) {
+		db.Post.create(params).then(post => {
+			console.log('Saved ' + post.id)
+			
+			callback(post)
+			
+		}).catch(function (err) {
+			console.log(err)
+		})		
 	},
 	
 	read: function(id, callback) {
 		console.log('Reading ' + id)
 		
-		jsonfile.readFile('posts/' + id + '.json', function(err, obj) {
-			callback(obj) //TODO handle null
+		db.Post.findOne({
+			where: {
+				id: id
+			}
+		}).then(post => {
+			callback(post)
 		})
 	}
 }

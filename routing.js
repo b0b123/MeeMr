@@ -1,5 +1,7 @@
 var post = require('./post')
+var db = require('./database')
 var fs = require('fs')
+const Sequelize = require('sequelize')
 
 //Uploading
 var multer = require('multer');
@@ -21,13 +23,13 @@ module.exports = function(app) {
 		uploadFile(req, res, function(err) {
 			if(err) {
 				console.log(err)
-				res.send("Error uploading file.");
+				res.send("Error uploading file.")
 			} else {
-				var id = post.create(req.body)
-				
-				fs.rename(req.file.path, 'public/img/' + id, function(err) { })
+				post.create(req.body, function(post) {
+					fs.rename(req.file.path, 'public/img/' + post.id, function(err) { })
 
-				returnPost(res, id)
+					returnPost(res, post.id)
+				})
 			}
 		})
 	})
@@ -41,17 +43,19 @@ module.exports = function(app) {
 	
 	//View random post
 	app.get('/randompost', function (req, res) {
-		fs.readdir('posts', function(err, files) {
-			var id = files[Math.floor(Math.random() * files.length)].split(".")[0]
-		
-			returnPost(res, id)
+		db.Post.findOne({
+			order: [
+				Sequelize.fn( 'RAND' ),
+			]
+		}).then(post => {		
+			returnPost(res, post.id)
 		})
 	})
 	
 	function returnPost(res, id) {
 		res.setHeader('Content-Type', 'application/json')
 		post.read(id, function(obj) {
-			res.send(obj)
+			res.send({ id: id, title: obj.title })
 		})
 	}
 }
