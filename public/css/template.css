@@ -1,0 +1,14 @@
+body {
+  padding-top: 50px;
+}
+.template {
+  padding: 40px 15px;
+  text-align: center;
+}
+.post {
+	background-color: grey;
+}
+.postTitle {
+	margin: 0px;
+	padding-top: 20px;
+}
