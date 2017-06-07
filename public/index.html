@@ -84,85 +84,16 @@
         </div>
         <div class="main-container">
 
-
             <section>
 
     <div class="container tab-content">
-
-
 
       <div id="recent" class="template tab-pane active">
         <h1>Recent</h1>
 		<div class="col-sm-8 col-sm-offset-2 boxed boxed--lg boxed--border" id="recentPost"></div>
       </div>
 
-
-
-
-            <div id="signin" class="template tab-pane">
-                        <div class="col-sm-7 col-md-5">
-                            <h2>Login to continue</h2>
-                            <p class="lead">
-                                Welcome back, sign in with your existing MeeMr account credentials
-                            </p>
-                            <form>
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <input placeholder="Username" type="text">
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <input placeholder="Password" type="password">
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <button class="btn btn--primary type--uppercase" type="submit">Login</button>
-                                    </div>
-                                </div>
-                                <!--end of row-->
-                            </form>
-                            <span class="type--fine-print block">Dont have an account yet?
-                                <a data-toggle="tab" href="#register">Create account</a>
-                            </span>
-                            <span class="type--fine-print block">Forgot your username or password?
-                                <a href="#">Recover account</a>
-                            </span>
-                        </div>
-                    </div>
-
-           <div id="register" class="template tab-pane">
-                        <div class="col-sm-7 col-md-5">
-                            <h2>Create an account</h2>
-                            <p class="lead">
-                                Create an account to start meming right away!
-                            </p>
-                            <form>
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <input placeholder="Username" type="text">
-                                    </div>
-                                    <div class="col-xs-12">
-                                        <input name="Email Address" placeholder="Email Address" type="email">
-                                    </div>
-                                    <div class="col-xs-12">
-                                        <input name="Password" placeholder="Password" type="password">
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <input name="cPassword" placeholder="Confirm password" type="password">
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <button class="btn btn--primary type--uppercase" type="submit">Login</button>
-                                    </div>
-                                </div>
-                                <!--end of row-->
-                            </form>
-                            <span class="type--fine-print block">Forgot your username or password?
-                                <a href="page-accounts-recover.html">Recover account</a>
-                            </span>
-                        </div>
-                    </div>
-
-
-
-      <div id="upload" class="template tab-pane">
+	  <div id="upload" class="template tab-pane">
         <h1>Upload</h1>
 		<form id="uploadForm">
 			<p>Title: <input name="title" type="text"></p>
@@ -176,7 +107,7 @@
 			  <li><div id="newPostFileRemove" class="btn btn-danger">x</div></li>
 			</ul>
 			
-			<div class="btn btn-primary" id="newPostSubmit">Upload</div>
+			<div class="btn btn--primary type--uppercase" id="postSubmit">Upload</div>
 		</form>
 		<br>
 		<p id="status"></p>
@@ -186,6 +117,67 @@
         <h1>Account</h1>
 		<p1>TODO</p1>
       </div>
+	  
+		<div id="signin" class="template tab-pane">
+			<div class="col-sm-7 col-md-5">
+				<h2>Login to continue</h2>
+				<p class="lead">
+					Welcome back, sign in with your existing MeeMr account credentials
+				</p>
+				<form id="loginForm">
+					<div class="row">
+						<div class="col-sm-12">
+							<input name="name" placeholder="Username" type="text">
+						</div>
+						<div class="col-sm-12">
+							<input name="pass" placeholder="Password" type="password">
+						</div>
+						<div class="col-sm-12">
+							<div class="btn btn--primary type--uppercase" id="loginSubmit">Login</div>
+						</div>
+					</div>
+					<!--end of row-->
+				</form>
+				<span class="type--fine-print block">Dont have an account yet?
+					<a data-toggle="tab" href="#register">Create account</a>
+				</span>
+				<span class="type--fine-print block">Forgot your username or password?
+					<a href="#">Recover account</a>
+				</span>
+			</div>
+		</div>
+
+	   <div id="register" class="template tab-pane">
+			<div class="col-sm-7 col-md-5">
+				<h2>Create an account</h2>
+				<p class="lead">
+					Create an account to start meming right away!
+				</p>
+				<form id="registerForm">
+					<div class="row">
+						<div class="col-sm-12">
+							<input name="name" placeholder="Username" type="text">
+						</div>
+						<!--<div class="col-xs-12">
+							<input name="Email Address" placeholder="Email Address" type="email">
+						</div>-->
+						<div class="col-xs-12">
+							<input name="pass" name="Password" placeholder="Password" type="password">
+						</div>
+						<div class="col-sm-12">
+							<input name="cpass" name="cPassword" placeholder="Confirm password" type="password">
+						</div>
+						<div class="col-sm-12">
+							<div class="btn btn--primary type--uppercase" id="registerSubmit">Register</div>
+						</div>
+					</div>
+					<!--end of row-->
+				</form>
+				<span class="type--fine-print block">Forgot your username or password?
+					<a href="page-accounts-recover.html">Recover account</a>
+				</span>
+			</div>
+		</div>
 	  
     </div>
             </section>
@@ -255,6 +247,11 @@
                 </div>
                 <!--end of container-->
             </footer>
+			
+			<footer id="modalFooter" style="position: fixed; bottom: 0; width: 100%; display: none;">
+				<h1 id="modalText" style="text-align: center; color: white;">Hello</h1>
+			</footer>
+			
         </div>
         <!--<div class="loader"></div>-->
         <a class="back-to-top inner-link" href="#start" data-scroll-class="100vh:active">

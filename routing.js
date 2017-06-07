@@ -63,9 +63,9 @@ module.exports = function(app) {
 	app.post('/user/create', function(req, res) {
 		user.create(req.body, function(err, user) {
 			if(err) {
-				returnJSON(res, { response: err })
+				returnJSON(res, { response: false })
 			} else {
-				returnJSON(res, { name: user.name, pass: user.pass })
+				returnJSON(res, { response: true })
 			}
 		})
 	})

@@ -40,5 +40,5 @@ module.exports = {
 }
 
 function encryptPass(salt, pass) {
-	return crypto.createHash('md5').update(salt + pass).digest('hex')
+	return crypto.createHash('md5').update(salt + "" + pass).digest('hex')
 }

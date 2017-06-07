@@ -5,7 +5,11 @@ $(function() {
 		$("#newPostFile").val("")
 	})
 	
-	$('#newPostSubmit').click(function() {
+	$("#modalFooter").click(function() {
+		$(this).slideUp()
+	})
+	
+	$('#postSubmit').click(function() {
 		$("#newPostStatus").text("File is uploading...")
 		
 		$.ajax({
@@ -17,33 +21,47 @@ $(function() {
 			processData: false
 			
 		}).done(function(r) {
-			$("#newPostStatus").text(JSON.stringify(r))
+			fancyModal(JSON.stringify(r), "green")
 		})
     })
 	
-	$('#newUserSubmit').click(function() {		
+	$('#registerSubmit').click(function() {	
+		var form = $(this).parent().parent()
+		
 		$.ajax({
 			url: "/user/create",
 			method: "POST",
 			data: {
-				//TODO name and pass
+				name: form.find("input[name=name]").val(),
+				pass: form.find("input[name=pass]").val()
 			}
 			
-		}).done(function(r) {
-			$("#newUserStatus").text(JSON.stringify(r))
+		}).done(function(r) {			
+			if(r.response) {
+				fancyModal("Registered successfully", "green")
+			} else {
+				fancyModal("Registration failed", "red")
+			}
 		})
     })
 	
-	$('#loginUserSubmit').click(function() {		
+	$('#loginSubmit').click(function() {
+	var form = $(this).parent().parent()
+		
 		$.ajax({
 			url: "/user/login",
 			method: "POST",
 			data: {
-				//TODO name and pass
+				name: form.find("input[name=name]").val(),
+				pass: form.find("input[name=pass]").val()
 			}
 			
 		}).done(function(r) {
-			$("#loginUserStatus").text(JSON.stringify(r))
+			if(r.response) {
+				fancyModal("Login succesful", "green")
+			} else {
+				fancyModal("Invalid login", "red")
+			}
 		})
     })
 	
@@ -67,4 +85,18 @@ function renderPost(selector, post) {
 	var post = "<div class='post'><h2 class='postTitle'><b>" + post.title + "</b></h2><img src='img/" + post.id + "'/></div>"
 
 	selector.html(post)
+}
+
+function fancyModal(message, color) {
+	$("#modalText").text(message)
+	$("#modalFooter").css("background-color", color)
+	$("#modalFooter").slideDown(function() {
+		sleep(3000).then(() => {
+			//$("#modalFooter").slideUp()
+		})
+	})
+}
+
+function sleep (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
 }
