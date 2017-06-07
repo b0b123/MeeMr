@@ -1,50 +1,166 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <head>
+        <meta charset="utf-8">
+        <title>MeemR</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Site Description Here">
+        <link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
+<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all" />
+        <link href="css/stack-interface.css" rel="stylesheet" type="text/css" media="all" />
+        <link href="css/socicon.css" rel="stylesheet" type="text/css" media="all" />
+        <link href="css/lightbox.min.css" rel="stylesheet" type="text/css" media="all" />
+        <link href="css/flickity.css" rel="stylesheet" type="text/css" media="all" />
+        <link href="css/iconsmind.css" rel="stylesheet" type="text/css" media="all" />
+        <link href="css/jquery.steps.css" rel="stylesheet" type="text/css" media="all" />
+        <link href="css/theme.css" rel="stylesheet" type="text/css" media="all" />
+        <link href="css/custom.css" rel="stylesheet" type="text/css" media="all" />
+        <link href="css/font-rubiklato.css" rel="stylesheet" type="text/css" media="all" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:200,300,400,400i,500,600,700%7CMerriweather:300,300i%7CMaterial+Icons" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700%7CRubik:300,400,500" rel="stylesheet" />
+    </head>
+    <body class=" ">
 
-    <title>Meemr</title>
+            <nav id="menu1" class="bar bar--sm bar-1 hidden-xs bar--absolute">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-1 col-sm-2 hidden-xs">
+                            <div class="bar__module">
+                                <a href="index.html">
+                                    <h3>Meemr</h3>
+                                </a>
+                            </div>
+                            <!--end module-->
+                        </div>
+                        <div class="col-md-11 col-sm-12 text-left text-left-xs text-left-sm">
+                            <div class="bar__module">
+                                <ul class="menu-horizontal text-left">
+                                    <li>
+                                        <span class="dropdown__trigger"><a href="#recent" data-toggle="tab">Recent</a></span>
+               
+                                    </li>
+                                    
+                                </ul>
+                            </div>
+                            <div class="bar__module">
+                                <ul class="menu-horizontal text-left">
+                                    <li>
+                                        <span class="dropdown__trigger"><a href="#upload" data-toggle="tab">Upload</a></span>
+               
+                                    </li>
+                                    
+                                </ul>
+                            </div>
+                            <div class="bar__module">
+                                <ul class="menu-horizontal text-left">
+                                    <li>
+                                        <span class="dropdown__trigger"><a href="#account" data-toggle="tab">Account</a></span>
+                                    </li>
+                                    
+                                </ul>
+                            </div>
 
-    <!-- Bootstrap core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="css/template.css" rel="stylesheet">
-  </head>
-
-  <body>
-
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand">Meemr</a>
+                            <!--end module-->
+                            <div class="bar__module">
+                                <a class="btn btn--sm type--uppercase" data-toggle="tab" href="#register">
+                                    <span class="btn__text">
+                                        Register
+                                    </span>
+                                </a>
+                                <a class="btn btn--sm btn--primary type--uppercase" data-toggle="tab" href="#signin">
+                                    <span class="btn__text">
+                                        Sign in
+                                    </span>
+                                </a>
+                            </div>
+                            <!--end module-->
+                        </div>
+                    </div>
+                    <!--end of row-->
+                </div>
+                <!--end of container-->
+            </nav>
+            <!--end bar-->
         </div>
-        <div id="navbar" class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-		    <!--Tabs -->
-            <li class="active"><a href="#recent" data-toggle="tab">Recent</a></li>
-            <li><a href="#upload" data-toggle="tab">Upload</a></li>
-            <li><a href="#account" data-toggle="tab">Account</a></li>
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
+        <div class="main-container">
 
-	<!--Tab divs -->
+
+            <section>
+
     <div class="container tab-content">
+
+
 
       <div id="recent" class="template tab-pane active">
         <h1>Recent</h1>
-		<div id="recentPost"></div>
+		<div class="col-sm-8 col-sm-offset-2 boxed boxed--lg boxed--border" id="recentPost"></div>
       </div>
+
+
+
+
+            <div id="signin" class="template tab-pane">
+                        <div class="col-sm-7 col-md-5">
+                            <h2>Login to continue</h2>
+                            <p class="lead">
+                                Welcome back, sign in with your existing MeeMr account credentials
+                            </p>
+                            <form>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <input placeholder="Username" type="text">
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <input placeholder="Password" type="password">
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <button class="btn btn--primary type--uppercase" type="submit">Login</button>
+                                    </div>
+                                </div>
+                                <!--end of row-->
+                            </form>
+                            <span class="type--fine-print block">Dont have an account yet?
+                                <a data-toggle="tab" href="#register">Create account</a>
+                            </span>
+                            <span class="type--fine-print block">Forgot your username or password?
+                                <a href="#">Recover account</a>
+                            </span>
+                        </div>
+                    </div>
+
+           <div id="register" class="template tab-pane">
+                        <div class="col-sm-7 col-md-5">
+                            <h2>Create an account</h2>
+                            <p class="lead">
+                                Create an account to start meming right away!
+                            </p>
+                            <form>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <input placeholder="Username" type="text">
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <input name="Email Address" placeholder="Email Address" type="email">
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <input name="Password" placeholder="Password" type="password">
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <input name="cPassword" placeholder="Confirm password" type="password">
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <button class="btn btn--primary type--uppercase" type="submit">Login</button>
+                                    </div>
+                                </div>
+                                <!--end of row-->
+                            </form>
+                            <span class="type--fine-print block">Forgot your username or password?
+                                <a href="page-accounts-recover.html">Recover account</a>
+                            </span>
+                        </div>
+                    </div>
+
+
 
       <div id="upload" class="template tab-pane">
         <h1>Upload</h1>
@@ -52,7 +168,11 @@
 			<p>Title: <input name="title" type="text"></p>
 			
 			<ul class="list-inline">
-			  <li><input class="btn btn-primary" id="newPostFile" name="file" type="file" accept="image/*"></li>
+
+<li>    <label class="btn btn-default btn-file">
+        Kies een bestand <input id="newPostFile" name="file" type="file" accept="image/*" style="display: none;">
+    </label></li>
+			  
 			  <li><div id="newPostFileRemove" class="btn btn-danger">x</div></li>
 			</ul>
 			
@@ -67,14 +187,98 @@
 		<p1>TODO</p1>
       </div>
 	  
-    </div><!-- /.container -->
+    </div>
+            </section>
+            
+            
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/jquery.min.js"></script>
+            <footer class="text-center-xs space--xs bg--dark ">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-7">
+                            <ul class="list-inline">
+                                <li>
+                                    <a href="#">
+                                        <span class="h6 type--uppercase">About</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <span class="h6 type--uppercase">Careers</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <span class="h6 type--uppercase">Support</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-5 text-right text-center-xs">
+                            <ul class="social-list list-inline list--hover">
+                                <li>
+                                    <a href="#">
+                                        <i class="socicon socicon-google icon icon--xs"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="socicon socicon-twitter icon icon--xs"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="socicon socicon-facebook icon icon--xs"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="socicon socicon-instagram icon icon--xs"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--end of row-->
+                    <div class="row">
+                        <div class="col-sm-7">
+                            <span class="type--fine-print">&copy;
+                                <span class="update-year"></span> MeeMr Inc.</span>
+                            <a class="type--fine-print" href="#">Privacy Policy</a>
+                            <a class="type--fine-print" href="#">Legal</a>
+                        </div>
+                        <div class="col-sm-5 text-right text-center-xs">
+                            <a class="type--fine-print" href="#">support@MeeMr.io</a>
+                        </div>
+                    </div>
+                    <!--end of row-->
+                </div>
+                <!--end of container-->
+            </footer>
+        </div>
+        <!--<div class="loader"></div>-->
+        <a class="back-to-top inner-link" href="#start" data-scroll-class="100vh:active">
+            <i class="stack-interface stack-up-open-big"></i>
+        </a>
+   <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
 	
 	<script src="js/app.js"></script>
-  </body>
+        <script src="js/jquery-3.1.1.min.js"></script>
+        <script src="js/flickity.min.js"></script>
+        <script src="js/easypiechart.min.js"></script>
+        <script src="js/parallax.js"></script>
+        <script src="js/typed.min.js"></script>
+        <script src="js/datepicker.js"></script>
+        <script src="js/isotope.min.js"></script>
+        <script src="js/ytplayer.min.js"></script>
+        <script src="js/lightbox.min.js"></script>
+        <script src="js/granim.min.js"></script>
+        <script src="js/jquery.steps.min.js"></script>
+        <script src="js/countdown.min.js"></script>
+        <script src="js/twitterfetcher.min.js"></script>
+        <script src="js/spectragram.min.js"></script>
+        <script src="js/smooth-scroll.min.js"></script>
+        <script src="js/scripts.js"></script>
+    </body>
 </html>
