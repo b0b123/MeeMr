@@ -1,7 +1,8 @@
 node_modules/
 _windows/
-public/img/
+public/img/*
 colors.scheme.xml
 debugger.xml
 IntelliLang.xml
 web-browsers.xml
+vcs.xml

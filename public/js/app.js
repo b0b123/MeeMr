@@ -6,7 +6,7 @@ $(function() {
 	})
 	
 	$('#newPostSubmit').click(function() {
-		$("#status").text("File is uploading...")
+		$("#newPostStatus").text("File is uploading...")
 		
 		$.ajax({
 			url: "/post/create",
@@ -17,7 +17,33 @@ $(function() {
 			processData: false
 			
 		}).done(function(r) {
-			$("#status").text(JSON.stringify(r))
+			$("#newPostStatus").text(JSON.stringify(r))
+		})
+    })
+	
+	$('#newUserSubmit').click(function() {		
+		$.ajax({
+			url: "/user/create",
+			method: "POST",
+			data: {
+				//TODO name and pass
+			}
+			
+		}).done(function(r) {
+			$("#newUserStatus").text(JSON.stringify(r))
+		})
+    })
+	
+	$('#loginUserSubmit').click(function() {		
+		$.ajax({
+			url: "/user/login",
+			method: "POST",
+			data: {
+				//TODO name and pass
+			}
+			
+		}).done(function(r) {
+			$("#loginUserStatus").text(JSON.stringify(r))
 		})
     })
 	

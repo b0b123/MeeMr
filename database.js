@@ -7,7 +7,7 @@ module.exports = {
 	}),
 
 	User: sequelize.define('user', {
-		username: Sequelize.STRING,
+		name: { type: Sequelize.STRING, unique: true },
 		pass: Sequelize.STRING
 	})
 };

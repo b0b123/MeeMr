@@ -1,4 +1,5 @@
 var post = require('./post')
+var user = require('./user')
 var db = require('./database')
 var fs = require('fs')
 const Sequelize = require('sequelize')
@@ -53,9 +54,32 @@ module.exports = function(app) {
 	})
 	
 	function returnPost(res, id) {
-		res.setHeader('Content-Type', 'application/json')
 		post.read(id, function(obj) {
-			res.send({ id: id, title: obj.title })
+			returnJSON(res, { id: id, title: obj.title })
 		})
+	}
+	
+	//Register user
+	app.post('/user/create', function(req, res) {
+		user.create(req.body, function(err, user) {
+			if(err) {
+				returnJSON(res, { response: err })
+			} else {
+				returnJSON(res, { name: user.name, pass: user.pass })
+			}
+		})
+	})
+	
+	//Login user
+	app.post('/user/login', function(req, res) {
+		user.checkLogin(req.body, function(response) {
+			returnJSON(res, { response: response })
+			//TODO make session
+		})
+	})
+	
+	function returnJSON(res, json) {
+		res.setHeader('Content-Type', 'application/json')
+		res.send(json)
 	}
 }
