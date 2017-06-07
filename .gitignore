@@ -1,5 +1,6 @@
 node_modules/
 _windows/
+public/img/
 colors.scheme.xml
 debugger.xml
 IntelliLang.xml
