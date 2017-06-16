@@ -18,7 +18,7 @@ var upload = multer({ storage: storage })
 
 module.exports = function(app) {
 	//Creating new posts
-	app.post('/post/create', function(req, res) {		
+	app.post('/post/create', function(req, res) {
 		var uploadFile = upload.single('file')
 		
 		uploadFile(req, res, function(err) {
@@ -44,6 +44,8 @@ module.exports = function(app) {
 	
 	//View random post
 	app.get('/randompost', function (req, res) {
+		console.log(req.session)
+		
 		db.Post.findOne({
 			order: [
 				Sequelize.fn( 'RAND' ),
@@ -61,21 +63,35 @@ module.exports = function(app) {
 	
 	//Register user
 	app.post('/user/create', function(req, res) {
-		user.create(req.body, function(err, user) {
-			if(err) {
-				returnJSON(res, { response: false })
-			} else {
-				returnJSON(res, { response: true })
+		user.create(req.body, function(data) {
+			if(typeof(data.err) == 'undefined') {
+				user.createSession(req, req.body)
 			}
+			
+			returnJSON(res, data)
 		})
 	})
 	
 	//Login user
 	app.post('/user/login', function(req, res) {
-		user.checkLogin(req.body, function(response) {
-			returnJSON(res, { response: response })
-			//TODO make session
+		user.checkLogin(req.body, function(success) {
+			if(success) {
+				user.createSession(req, req.body)
+			}
+			
+			returnJSON(res, { response: success })
 		})
+	})
+	
+	//Logout user
+	app.post('/user/logout', function(req, res) {
+		req.session.destroy()
+		returnJSON(res, { })
+	})
+	
+	//Get user session
+	app.get('/user/session', function(req, res) {
+		returnJSON(res, { name: req.session.name })
 	})
 	
 	function returnJSON(res, json) {

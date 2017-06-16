@@ -5,3 +5,4 @@ npm install sequelize
 npm install pg
 npm install mysql
 npm install crypto
+npm install express-session

@@ -1,4 +1,52 @@
 $(function() {
+	//Session
+	var session = { };
+
+	function loadSession() {
+		$.ajax({
+			url: "/user/session",
+			method: "GET"
+			
+		}).done(function(r) {
+			session = r
+			
+			if(typeof(session.name) != 'undefined') {
+				login(session.name)
+			}
+		})
+	}
+	
+	function login(name) {
+		$("#registerbtn").hide()
+		$("#signinbtn").hide()
+		$("#greetuser").show()
+		$("#logoutbtn").show()
+		$("#uploadbtn").show()
+		
+		$("#recentbtn")[0].click()
+		
+		$("#greetuser").find("span").text("Welcome back, " + session.name + "!")
+	}
+	
+	function logout() {
+		$("#registerbtn").show()
+		$("#signinbtn").show()
+		$("#greetuser").hide()
+		$("#logoutbtn").hide()
+		$("#uploadbtn").hide()
+		
+		$("#recentbtn")[0].click()
+		
+		$.ajax({
+			url: "/user/logout",
+			method: "POST"
+			
+		}).done(function(r) {
+			fancyModal("Logout successful", "green")
+		})
+	}
+	
+	loadSession();
 	
 	//Button behaviour
 	$('#newPostFileRemove').click(function() {
@@ -7,6 +55,10 @@ $(function() {
 	
 	$("#modalFooter").click(function() {
 		$(this).slideUp()
+	})
+	
+	$("#logoutbtn").click(function() {
+		logout();
 	})
 	
 	$('#postSubmit').click(function() {
@@ -27,38 +79,51 @@ $(function() {
 	
 	$('#registerSubmit').click(function() {	
 		var form = $(this).parent().parent()
+		var name = form.find("input[name=name]").val()
+		var pass = form.find("input[name=pass]").val()
+		var cpass = form.find("input[name=cpass]").val()
+		
+		if(pass != cpass) {
+			fancyModal("Registration failed: Passwords do not match", "red")
+			return;
+		}
 		
 		$.ajax({
 			url: "/user/create",
 			method: "POST",
 			data: {
-				name: form.find("input[name=name]").val(),
-				pass: form.find("input[name=pass]").val()
+				name: name,
+				pass: pass
 			}
 			
 		}).done(function(r) {			
-			if(r.response) {
-				fancyModal("Registered successfully", "green")
+			if(typeof(r.err) != 'undefined') {
+				fancyModal("Registeration failed: " + r.err, "red")
 			} else {
-				fancyModal("Registration failed", "red")
+				fancyModal("Registered successfully", "green")
+				loadSession()
 			}
 		})
     })
 	
 	$('#loginSubmit').click(function() {
-	var form = $(this).parent().parent()
+		var form = $(this).parent().parent()
+		var name = form.find("input[name=name]").val()
+		var pass = form.find("input[name=pass]").val()
+		form.find("input[name=pass]").val("")
 		
 		$.ajax({
 			url: "/user/login",
 			method: "POST",
 			data: {
-				name: form.find("input[name=name]").val(),
-				pass: form.find("input[name=pass]").val()
+				name: name,
+				pass: pass
 			}
 			
 		}).done(function(r) {
 			if(r.response) {
-				fancyModal("Login succesful", "green")
+				fancyModal("Login successful", "green")
+				loadSession()
 			} else {
 				fancyModal("Invalid login", "red")
 			}

@@ -9,9 +9,16 @@ module.exports = {
 	User: sequelize.define('user', {
 		name: { type: Sequelize.STRING, unique: true },
 		pass: Sequelize.STRING
+	}),
+	
+	Vote: sequelize.define('vote', {
+		upvote: Sequelize.BOOLEAN
 	})
 };
 
+//module.exports.Vote.hasOne(module.exports.Post, { foreignKey: 'id' })
+//module.exports.Vote.hasOne(module.exports.User, { foreignKey: 'id' })
+
 sequelize.sync().then(() => {
-	console.log("Database loaded")	
+	console.log("Database loaded")
 })

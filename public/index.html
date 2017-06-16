@@ -36,13 +36,13 @@
                             <div class="bar__module">
                                 <ul class="menu-horizontal text-left">
                                     <li>
-                                        <span class="dropdown__trigger"><a href="#recent" data-toggle="tab">Recent</a></span>
+                                        <span class="dropdown__trigger"><a id="recentbtn" href="#recent" data-toggle="tab">Recent</a></span>
                
                                     </li>
                                     
                                 </ul>
                             </div>
-                            <div class="bar__module">
+                            <div id="uploadbtn" class="bar__module" style='display: none;'>
                                 <ul class="menu-horizontal text-left">
                                     <li>
                                         <span class="dropdown__trigger"><a href="#upload" data-toggle="tab">Upload</a></span>
@@ -51,25 +51,27 @@
                                     
                                 </ul>
                             </div>
-                            <div class="bar__module">
-                                <ul class="menu-horizontal text-left">
-                                    <li>
-                                        <span class="dropdown__trigger"><a href="#account" data-toggle="tab">Account</a></span>
-                                    </li>
-                                    
-                                </ul>
-                            </div>
 
                             <!--end module-->
                             <div class="bar__module">
-                                <a class="btn btn--sm type--uppercase" data-toggle="tab" href="#register">
+                                <a id="registerbtn" class="btn btn--sm type--uppercase" data-toggle="tab" href="#register">
                                     <span class="btn__text">
                                         Register
                                     </span>
                                 </a>
-                                <a class="btn btn--sm btn--primary type--uppercase" data-toggle="tab" href="#signin">
+                                <a id="signinbtn" class="btn btn--sm btn--primary type--uppercase" data-toggle="tab" href="#signin">
                                     <span class="btn__text">
                                         Sign in
+                                    </span>
+                                </a>
+								<a id="greetuser" class="btn btn--sm btn--primary type--uppercase" data-toggle="tab" href="#account" style='display: none;'>
+                                    <span class="btn__text">
+                                        Boe
+                                    </span>
+                                </a>
+								<a id="logoutbtn" class="btn btn--sm type--uppercase" style='display: none;'>
+                                    <span class="btn__text">
+                                        Logout
                                     </span>
                                 </a>
                             </div>
