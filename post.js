@@ -28,5 +28,43 @@ module.exports = {
 		}).then(post => {
 			callback(post)
 		})
+	},
+	
+	vote: function(params, callback) {		
+		db.Vote.findOne({
+			where: {
+				userId: params.userId,
+				postId: params.postId
+			}
+		}).then(vote => {
+			if(vote != null) {
+				//vote exists
+				if(vote.upvote != params.upvote) {
+					//update vote
+					console.log("Updating vote " + vote.id)
+					
+					vote.updateAttributes({
+						upvote: params.upvote
+						
+					}).then(function() {
+						callback({ })
+					})
+					
+				} else {
+					callback({ })
+				}
+				
+			} else {
+				db.Vote.create(params).then(vote => {
+					console.log('Placed vote ' + vote.id)
+					
+					callback({ })
+					
+				}).catch(function (err) {
+					console.log(err)
+					callback({ err: "An error occurred" })
+				})
+			}
+		})
 	}
 }

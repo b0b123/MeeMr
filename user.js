@@ -3,8 +3,8 @@ var crypto = require('crypto')
 
 module.exports = {
 	create: function(params, callback) {
-		this.save(params, function(err, user) {
-			callback(err, user)
+		this.save(params, function(data) {
+			callback(data)
 		})
 	},
 	
@@ -49,12 +49,13 @@ module.exports = {
 		var pass = encryptPass(params.name, params.pass)
 		
 		this.read(params.name, function(user) {
-			callback(user != null && user.pass == pass)
+			callback(user != null && user.pass == pass, user)
 		})
 	},
 	
-	createSession: function(req, params) {
+	createSession: function(req, params, id) {
 		req.session.name = params.name
+		req.session.userId = id
 	}
 }
 

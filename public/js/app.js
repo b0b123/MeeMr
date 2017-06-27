@@ -139,15 +139,18 @@ $(function() {
 			callback(r)
 		})
 	}
-	
+
 	//Onload behaviour 
 	getRandomPost(function(post) {
-		renderPost($("#recentPost"), post)		
+		renderPost($("#recentPost"), post)
+	})
+	getRandomPost(function(post) {
+		renderPost($("#recentPost2"), post)
 	})
 })
 
 function renderPost(selector, post) {
-	var post = "<div class='post'><h2 class='postTitle'><b>" + post.title + "</b></h2><img src='img/" + post.id + "'/></div>"
+	var post = "<div class='post' name='" + post.id + "'><h2 class='postTitle'><b>" + post.title + "</b></h2><img src='img/" + post.id + "'/><div><div class='btn btn-success' onclick='upvote(this)'>Upvote (" + post.upvotes + ")</div><div class='btn btn-danger' onclick='downvote(this)'>Downvote (" + post.downvotes + ")</div></div></div>"
 
 	selector.html(post)
 }
@@ -164,4 +167,38 @@ function fancyModal(message, color) {
 
 function sleep (time) {
   return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+//Voting
+function placeVote(postId, upvote, callback) {
+	$.ajax({
+		url: "/vote",
+		method: "POST",
+		data: {
+			postId: postId,
+			upvote: upvote
+		}
+	}).done(function(r) {
+		callback(r)
+	})
+}
+
+function upvote(me) {
+	me = $(me);
+	var id = me.parent().parent().attr("name")
+	
+	placeVote(id, 1, function(post) {
+		renderPost(me.parent().parent().parent(), post)
+		me.parent().parent().remove()
+	})
+}
+
+function downvote(me) {
+	me = $(me);
+	var id = me.parent().parent().attr("name")
+	
+	placeVote(id, 0, function(post) {
+		renderPost(me.parent().parent().parent(), post)
+		me.parent().parent().remove()
+	})
 }

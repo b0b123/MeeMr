@@ -16,8 +16,8 @@ module.exports = {
 	})
 };
 
-//module.exports.Vote.hasOne(module.exports.Post, { foreignKey: 'id' })
-//module.exports.Vote.hasOne(module.exports.User, { foreignKey: 'id' })
+module.exports.Post.hasOne(module.exports.Vote, { foreignKey: 'postId', foreignKeyConstraint: true })
+module.exports.User.hasOne(module.exports.Vote, { foreignKey: 'userId', foreignKeyConstraint: true })
 
 sequelize.sync().then(() => {
 	console.log("Database loaded")

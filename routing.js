@@ -18,7 +18,12 @@ var upload = multer({ storage: storage })
 
 module.exports = function(app) {
 	//Creating new posts
-	app.post('/post/create', function(req, res) {
+	app.post('/post/create', function(req, res) {		
+		if(typeof(req.session.userId) == 'undefined') {
+			returnJSON(res, { err: "Not logged in" })
+			return
+		}
+		
 		var uploadFile = upload.single('file')
 		
 		uploadFile(req, res, function(err) {
@@ -43,9 +48,7 @@ module.exports = function(app) {
 	})
 	
 	//View random post
-	app.get('/randompost', function (req, res) {
-		console.log(req.session)
-		
+	app.get('/randompost', function (req, res) {		
 		db.Post.findOne({
 			order: [
 				Sequelize.fn( 'RAND' ),
@@ -57,15 +60,47 @@ module.exports = function(app) {
 	
 	function returnPost(res, id) {
 		post.read(id, function(obj) {
-			returnJSON(res, { id: id, title: obj.title })
+			db.Vote.findAndCountAll({
+				where: {
+					postId: id,
+					upvote: 1
+				}
+			}).then(upvoteResult => {
+				var upvotes = upvoteResult.count
+				
+				db.Vote.findAndCountAll({
+					where: {
+						postId: id,
+						upvote: 0
+					}
+				}).then(downvoteResult => {
+					var downvotes = downvoteResult.count
+				
+					returnJSON(res, { id: id, title: obj.title, upvotes: upvotes, downvotes: downvotes })
+				});
+			});
 		})
 	}
+	
+	//Vote on post
+	app.post('/vote', function(req, res) {
+		if(typeof(req.session.userId) == 'undefined') {
+			returnJSON(res, { err: "Not logged in" })
+			return
+		}
+		
+		req.body.userId = req.session.userId;
+		
+		post.vote(req.body, function(data) {
+			returnPost(res, req.body.postId)
+		})
+	})
 	
 	//Register user
 	app.post('/user/create', function(req, res) {
 		user.create(req.body, function(data) {
 			if(typeof(data.err) == 'undefined') {
-				user.createSession(req, req.body)
+				user.createSession(req, req.body, data.user.id)
 			}
 			
 			returnJSON(res, data)
@@ -74,9 +109,9 @@ module.exports = function(app) {
 	
 	//Login user
 	app.post('/user/login', function(req, res) {
-		user.checkLogin(req.body, function(success) {
+		user.checkLogin(req.body, function(success, u) {
 			if(success) {
-				user.createSession(req, req.body)
+				user.createSession(req, req.body, u.id)
 			}
 			
 			returnJSON(res, { response: success })
