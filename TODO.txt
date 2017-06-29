@@ -1,7 +1,7 @@
 validatie als database leeg is (geen plaatje)
 
-profiel
+mobile tokens
 
-inloggegeven aanpassen
+profiel/inloggegeven aanpassen
 
-meerdere posts(fotos) ophalen en laten zien
+meerdere posts(fotos) ophalen en laten zien (relevante feed)
