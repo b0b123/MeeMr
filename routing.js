@@ -85,7 +85,8 @@ module.exports = function(app) {
 	//Vote on post
 	app.post('/vote', function(req, res) {
 		if(typeof(req.session.userId) == 'undefined') {
-			returnJSON(res, { err: "Not logged in" })
+			//returnJSON(res, { err: "Not logged in" })
+			returnPost(res, req.body.postId)
 			return
 		}
 		
