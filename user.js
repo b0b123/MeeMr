@@ -49,15 +49,24 @@ module.exports = {
 		var pass = encryptPass(params.name, params.pass)
 		
 		this.read(params.name, function(user) {
-			callback(user != null && user.pass == pass, user)
+			callback({ success: user != null && user.pass == pass, user: user })
 		})
 	},
 	
 	createSession: function(req, params, id) {
 		req.session.name = params.name
 		req.session.userId = id
+		req.session.token = req.session.id
+		
+		this.store[req.session.token] = req.session
+	},
+	
+	getSession: function(id) {
+		return store[id]
 	}
 }
+
+module.exports.store = {}
 
 function encryptPass(salt, pass) {
 	var secret = "42069schermutselinggezegevierd"

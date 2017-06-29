@@ -39,7 +39,7 @@ module.exports = {
 		}).then(vote => {
 			if(vote != null) {
 				//vote exists
-				if(vote.upvote != params.upvote) {
+				if(vote.upvote != params.upvote && (params.upvote == 0 || params.upvote == 1)) {
 					//update vote
 					console.log("Updating vote " + vote.id)
 					

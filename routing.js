@@ -16,7 +16,7 @@ var storage = multer.diskStorage({
 });
 var upload = multer({ storage: storage })
 
-module.exports = function(app) {
+module.exports = function(app) {	
 	//Creating new posts
 	app.post('/post/create', function(req, res) {		
 		if(typeof(req.session.userId) == 'undefined') {
@@ -29,7 +29,8 @@ module.exports = function(app) {
 		uploadFile(req, res, function(err) {
 			if(err) {
 				console.log(err)
-				res.send("Error uploading file.")
+				returnJSON(res, { err: "Error uploading file" })
+				
 			} else {
 				post.create(req.body, function(post) {
 					fs.rename(req.file.path, 'public/img/' + post.id, function(err) { })
@@ -83,14 +84,13 @@ module.exports = function(app) {
 	}
 	
 	//Vote on post
-	app.post('/vote', function(req, res) {
-		if(typeof(req.session.userId) == 'undefined') {
-			//returnJSON(res, { err: "Not logged in" })
-			returnPost(res, req.body.postId)
+	app.post('/vote', function(req, res) {		
+		if(typeof(user.store[req.body.token]) == 'undefined') {
+			returnJSON(res, { err: "Not logged in" })
 			return
 		}
 		
-		req.body.userId = req.session.userId;
+		req.body.userId = user.store[req.body.token].userId;
 		
 		post.vote(req.body, function(data) {
 			returnPost(res, req.body.postId)
@@ -110,24 +110,25 @@ module.exports = function(app) {
 	
 	//Login user
 	app.post('/user/login', function(req, res) {
-		user.checkLogin(req.body, function(success, u) {
-			if(success) {
-				user.createSession(req, req.body, u.id)
+		user.checkLogin(req.body, function(data) {
+			if(data.success) {
+				user.createSession(req, req.body, data.user.id)
 			}
 			
-			returnJSON(res, { response: success })
+			returnJSON(res, { success: data.success, token: req.session.token })
 		})
 	})
 	
 	//Logout user
 	app.post('/user/logout', function(req, res) {
+		delete user.store[req.session.token]
 		req.session.destroy()
 		returnJSON(res, { })
 	})
 	
 	//Get user session
 	app.get('/user/session', function(req, res) {
-		returnJSON(res, { name: req.session.name })
+		returnJSON(res, { name: req.session.name, token: req.session.token })
 	})
 	
 	function returnJSON(res, json) {

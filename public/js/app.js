@@ -1,7 +1,7 @@
+var session = { };
+
 $(function() {
 	//Session
-	var session = { };
-
 	function loadSession() {
 		$.ajax({
 			url: "/user/session",
@@ -10,13 +10,13 @@ $(function() {
 		}).done(function(r) {
 			session = r
 			
-			if(typeof(session.name) != 'undefined') {
-				login(session.name)
+			if(typeof(session.token) != 'undefined') {
+				login()
 			}
 		})
 	}
 	
-	function login(name) {
+	function login() {
 		$("#registerbtn").hide()
 		$("#signinbtn").hide()
 		$("#greetuser").show()
@@ -121,7 +121,7 @@ $(function() {
 			}
 			
 		}).done(function(r) {
-			if(r.response) {
+			if(r.success) {
 				fancyModal("Login successful", "green")
 				loadSession()
 			} else {
@@ -175,6 +175,7 @@ function placeVote(postId, upvote, callback) {
 		url: "/vote",
 		method: "POST",
 		data: {
+			token: session.token,
 			postId: postId,
 			upvote: upvote
 		}
@@ -187,9 +188,14 @@ function upvote(me) {
 	me = $(me);
 	var id = me.parent().parent().attr("name")
 	
-	placeVote(id, 1, function(post) {
-		renderPost(me.parent().parent().parent(), post)
-		me.parent().parent().remove()
+	placeVote(id, 1, function(data) {
+		if(typeof(data.err) != 'undefined') {
+			fancyModal(data.err, "red")
+		
+		} else {
+			renderPost(me.parent().parent().parent(), data)
+			me.parent().parent().remove()
+		}
 	})
 }
 
@@ -197,8 +203,13 @@ function downvote(me) {
 	me = $(me);
 	var id = me.parent().parent().attr("name")
 	
-	placeVote(id, 0, function(post) {
-		renderPost(me.parent().parent().parent(), post)
-		me.parent().parent().remove()
+	placeVote(id, 0, function(data) {
+		if(typeof(data.err) != 'undefined') {
+			fancyModal(data.err, "red")
+		
+		} else {
+			renderPost(me.parent().parent().parent(), data)
+			me.parent().parent().remove()
+		}
 	})
 }
