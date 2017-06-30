@@ -103,8 +103,8 @@ module.exports = function(app) {
 			if(typeof(data.err) == 'undefined') {
 				user.createSession(req, req.body, data.user.id)
 			}
-			
-			returnJSON(res, data)
+            returnJSON(res, { success: data.success, token: req.session.token })
+			//returnJSON(res, data)
 		})
 	})
 	

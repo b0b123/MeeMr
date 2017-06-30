@@ -20,6 +20,8 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private String token = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,12 +53,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return true;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -66,9 +68,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -86,8 +88,21 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_recent:
                 fragment = new RecentActivity();
                 break;
+            case R.id.nav_register:
+                fragment = new RegisterActivity();
+                break;
             case R.id.nav_login:
+                if(token ==""){
                 fragment = new LoginActivity();
+                }
+                else{
+                    token="";
+                    Snackbar.make(findViewById(R.id.memeview), "Logged out", Snackbar.LENGTH_SHORT)
+                            .setAction("Action", null).show();
+                    item.setTitle("Log in");
+                    TextView navheader = (TextView) findViewById(R.id.navheadertext);
+                    navheader.setText("Howdy, stranger.");
+                }
                 break;
 
         }
@@ -102,5 +117,13 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void setToken(String loginToken){
+        token = loginToken;
+    }
+
+    public String getToken(){
+        return token;
     }
 }

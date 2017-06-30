@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -17,11 +18,15 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
+
+import java.util.HashMap;
 
 /**
  * Created by stefa on 27-6-2017.
@@ -35,6 +40,7 @@ public class RecentActivity extends Fragment {
     String randompostURL = "http://10.0.2.2:3000/randompost";
     String data = "";
     RequestQueue requestQueue;
+    String postId;
 
     @Nullable
     @Override
@@ -44,6 +50,9 @@ public class RecentActivity extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        getActivity().getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
         super.onViewCreated(view, savedInstanceState);
         imgResult = (ImageView) getView().findViewById(R.id.memeview);
         getRequest();
@@ -51,6 +60,7 @@ public class RecentActivity extends Fragment {
         fabdown.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                vote("0");
                 getRequest();
             }
         });
@@ -65,6 +75,7 @@ public class RecentActivity extends Fragment {
         fabup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                vote("1");
                 getRequest();
             }
         });
@@ -74,9 +85,11 @@ public class RecentActivity extends Fragment {
             public void onSwipeRight() {
                 Snackbar.make(getView().findViewById(R.id.memeview), "Upvoted", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                vote("1");
                 getRequest();
             }
             public void onSwipeLeft() {
+                vote("0");
                 Snackbar.make(getView().findViewById(R.id.memeview), "Downvoted", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 getRequest();
@@ -87,6 +100,43 @@ public class RecentActivity extends Fragment {
             }
 
         });
+    }
+
+    public void vote(String type){
+        String token = "";
+        try{
+            token = ((MainActivity) getActivity()).getToken();
+        } catch (Exception e){
+            System.out.println("Helaas pindakaas.");
+        }
+        if(token!=""){
+            RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+            final String URL = "http://10.0.2.2:3000/vote";
+            // Post params to be sent to the server
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("token", token);
+            params.put("postId", postId);
+            params.put("upvote", type);
+
+            JsonObjectRequest req = new JsonObjectRequest(URL, new JSONObject(params),
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                VolleyLog.v("Response:%n %s", response.toString(4));
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    VolleyLog.e("Error: ", error.getMessage());
+                }
+            });
+            requestQueue.add(req);
+        }
     }
 
     public void getRequest(){
@@ -111,6 +161,7 @@ public class RecentActivity extends Fragment {
                             results.setText(response.getString("title"));
                             int upvotes = Integer.parseInt(response.getString("upvotes"));
                             int downvotes = Integer.parseInt(response.getString("downvotes"));
+                            postId = response.getString("id");
                             points.setText(upvotes-downvotes + " Points");
                             System.out.println("WE DEDEN IETS!");
                             Animation myFadeInAnimation = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.fadein);
