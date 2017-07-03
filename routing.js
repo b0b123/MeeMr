@@ -51,35 +51,62 @@ module.exports = function(app) {
 	//View random post
 	app.get('/randompost', function (req, res) {		
 		db.Post.findOne({
-			order: [
-				Sequelize.fn( 'RAND' ),
-			]
-		}).then(post => {		
+			order: [ Sequelize.fn( 'RAND' ) ]
+			
+		}).then(post => {
+			if(post == null) {
+				returnJSON(res, { err: "No posts found" })
+				return
+			}
+			
 			returnPost(res, post.id)
+		})
+	})
+	
+	//Get next post
+	app.get('/nextpost', function (req, res) {
+		var sort = req.query.sort
+		var search = req.query.search
+		
+		//If search and sort requirements are still the same, continue in feed, else start at the start of the feed
+		if(typeof(req.session.lastSort) == 'undefined' || req.session.lastSort != sort || typeof(req.session.lastSearch) == 'undefined' || req.session.lastSearch != search) {
+			req.session.currentIndex = 0
+		} else {
+			req.session.currentIndex += 1
+		}
+		
+		var order;
+		if(sort.toLowerCase() == "recent") {
+			order = [['createdAt', 'DESC']]
+		}
+		if(sort.toLowerCase() == "hot") {
+			order = [['upvotes', 'DESC']]
+		}
+		
+		db.Post.findAll({
+			order: order,
+			where: {
+				title: {
+					$like: "%" + search + "%"
+				}
+			}
+			
+		}).then(posts => {
+			if(posts.length == 0 || posts.length <= req.session.currentIndex) {
+				returnJSON(res, { err: "No posts found" })
+				return
+			}
+			
+			returnPost(res, posts[req.session.currentIndex].id)
+			
+			req.session.lastSort = sort
+			req.session.lastSearch = search
 		})
 	})
 	
 	function returnPost(res, id) {
 		post.read(id, function(obj) {
-			db.Vote.findAndCountAll({
-				where: {
-					postId: id,
-					upvote: 1
-				}
-			}).then(upvoteResult => {
-				var upvotes = upvoteResult.count
-				
-				db.Vote.findAndCountAll({
-					where: {
-						postId: id,
-						upvote: 0
-					}
-				}).then(downvoteResult => {
-					var downvotes = downvoteResult.count
-				
-					returnJSON(res, { id: id, title: obj.title, upvotes: upvotes, downvotes: downvotes })
-				});
-			});
+			returnJSON(res, { id: id, title: obj.title, upvotes: obj.upvotes, downvotes: obj.downvotes })
 		})
 	}
 	
@@ -90,10 +117,12 @@ module.exports = function(app) {
 			return
 		}
 		
-		req.body.userId = user.store[req.body.token].userId;
+		req.body.userId = user.store[req.body.token].userId
 		
 		post.vote(req.body, function(data) {
-			returnPost(res, req.body.postId)
+			post.updateVotes(req.body.postId, function() {
+				returnPost(res, req.body.postId)			
+			})
 		})
 	})
 	
@@ -102,9 +131,18 @@ module.exports = function(app) {
 		user.create(req.body, function(data) {
 			if(typeof(data.err) == 'undefined') {
 				user.createSession(req, req.body, data.user.id)
+				returnJSON(res, { token: req.session.token })
+				
+			} else {
+				returnJSON(res, { err: data.err })
 			}
-            returnJSON(res, { success: data.success, token: req.session.token })
-			//returnJSON(res, data)
+		})
+	})
+	
+	//Change user password
+	app.post('/user/changePass', function(req, res) {		
+		user.changePass(req.body, function(data) {
+			returnJSON(res, data)
 		})
 	})
 	

@@ -1,4 +1,4 @@
-var session = { };
+var session = { }
 
 $(function() {
 	//Session
@@ -12,6 +12,10 @@ $(function() {
 			
 			if(typeof(session.token) != 'undefined') {
 				login()
+				
+			} else {
+				//Tutorial
+				fancyModal("Welcome! Scroll down or click the image to find new spicy memes! (Click to dismiss)", "#337ab7")
 			}
 		})
 	}
@@ -26,6 +30,7 @@ $(function() {
 		$("#recentbtn")[0].click()
 		
 		$("#greetuser").find("span").text("Welcome back, " + session.name + "!")
+		$("#username").text(session.name)
 	}
 	
 	function logout() {
@@ -35,14 +40,15 @@ $(function() {
 		$("#logoutbtn").hide()
 		$("#uploadbtn").hide()
 		
-		$("#recentbtn")[0].click()
-		
+		session = { }
 		$.ajax({
 			url: "/user/logout",
 			method: "POST"
 			
 		}).done(function(r) {
 			fancyModal("Logout successful", "green")
+			
+			$("#recentbtn")[0].click()
 		})
 	}
 	
@@ -59,6 +65,22 @@ $(function() {
 	
 	$("#logoutbtn").click(function() {
 		logout();
+	})
+	
+	$("#recentbtn").click(function() {
+		$("#currentPostSort").text("Recent")
+		
+		getNextPost("recent", "", function(post) {
+			renderPost("#recentPost", post)
+		})
+	})
+	
+	$("#hotbtn").click(function() {
+		$("#currentPostSort").text("Hot")
+		
+		getNextPost("hot", "", function(post) {
+			renderPost("#hotPost", post)
+		})
 	})
 	
 	$('#postSubmit').click(function() {
@@ -130,29 +152,77 @@ $(function() {
 		})
     })
 	
-	//Functions
-	function getRandomPost(callback) {
+	$('#changePassSubmit').click(function() {	
+		var form = $(this).parent()
+		var oldPass = form.find("input[name=oldPass]").val()
+		var newPass = form.find("input[name=newPass]").val()
+		var cnewPass = form.find("input[name=cnewPass]").val()
+		
+		if(newPass != cnewPass) {
+			fancyModal("Changing password failed: Passwords do not match", "red")
+			return;
+		}
+		
 		$.ajax({
-			url: "/randompost"
+			url: "/user/changePass",
+			method: "POST",
+			data: {
+				token: session.token,
+				oldPass: oldPass,
+				newPass: newPass
+			}
 			
 		}).done(function(r) {
-			callback(r)
+			if(typeof(r.err) != 'undefined') {
+				fancyModal("Changing password failed: " + r.err, "red")
+			} else {
+				fancyModal("Changed password successfully", "green")
+			}
 		})
-	}
+    })
 
 	//Onload behaviour 
-	getRandomPost(function(post) {
-		renderPost($("#recentPost"), post)
-	})
-	getRandomPost(function(post) {
-		renderPost($("#recentPost2"), post)
-	})
+	$("#recentbtn")[0].click()
+	
+	//Zooming using cross-browser compatible scroll event listening
+	var mousewheelevt = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel"; // FF doesn't recognize mousewheel as of FF3.x
+	
+	if (document.attachEvent) { // if IE (and Opera depending on user setting)
+		document.attachEvent("on"+mousewheelevt, function(e) { onScrollEvent(e); });
+	} else if (document.addEventListener) { // WC3 browsers
+		document.addEventListener(mousewheelevt, function(e) { onScrollEvent(e); }, false);
+	}
+	
+	function onScrollEvent(e) {
+		var up;
+		if(e.wheelDelta != undefined) {
+			up = e.wheelDelta > 0;
+		} else {
+			up = e.detail < 0;
+		}
+		
+		if(!up) {
+			e.preventDefault()
+		}
+	}
 })
 
 function renderPost(selector, post) {
-	var post = "<div class='post' name='" + post.id + "'><h2 class='postTitle'><b>" + post.title + "</b></h2><img src='img/" + post.id + "'/><div><div class='btn btn-success' onclick='upvote(this)'>Upvote (" + post.upvotes + ")</div><div class='btn btn-danger' onclick='downvote(this)'>Downvote (" + post.downvotes + ")</div></div></div>"
+	if(typeof(post.err) != 'undefined') {
+		$(selector).html("<h1 style='color:green'><center><b>Congratulations!</b><br>You have finally reached the end of the internet! There's nothing more to see, no more links to visit. You've done it all.</center></h1>")
+		return
+	}
+	
+	var loggedIn = typeof(session.token) != 'undefined'
+	
+	var upvoteBtn = "<div class='btn btn-success' onclick='upvote(this)'>Upvote (" + post.upvotes + ")</div>"
+	var downvoteBtn = "<div class='btn btn-danger' onclick='downvote(this)'>Downvote (" + post.downvotes + ")</div>"
+	var upvoteView = "<h4 style='color:green;'>" + post.upvotes + " upvotes</h4>"
+	var downvoteView = "<h4 style='color:red;'>" + post.downvotes + " downvotes</h4>"
+	
+	var post = "<div class='post' name='" + post.id + "'><h2 class='postTitle'><b>" + post.title + "</b></h2><img src='img/" + post.id + "'/><div>" + (loggedIn ? upvoteBtn : upvoteView) + (loggedIn ? downvoteBtn : downvoteView) + "</div></div>"
 
-	selector.html(post)
+	$(selector).html(post)
 }
 
 function fancyModal(message, color) {
@@ -166,7 +236,38 @@ function fancyModal(message, color) {
 }
 
 function sleep (time) {
-  return new Promise((resolve) => setTimeout(resolve, time));
+	return new Promise((resolve) => setTimeout(resolve, time))
+}
+
+function getRandomPost(callback) {
+	$.ajax({
+		url: "/randompost"
+		
+	}).done(function(r) {
+		callback(r)
+	})
+}
+
+function getNextPost(sort, search, callback) {
+	$.ajax({
+		url: "/nextpost",
+		data: {
+			sort: sort,
+			search: search
+		}
+		
+	}).done(function(r) {
+		callback(r)
+	})
+}
+
+function nextPost(selector) {
+	$(selector).slideUp(function() {
+		getRandomPost(function(post) {
+			renderPost(selector, post)
+			$(selector).slideDown()
+		})
+	})
 }
 
 //Voting

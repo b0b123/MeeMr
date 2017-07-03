@@ -1,10 +1,1 @@
-validatie als database leeg is (geen plaatje)
-
-profiel / login gegevens aanpassen
-
-het maken van een goed lopende feed
-meerdere posts(fotos) ophalen en laten zien (relevante feed)
-
-zoek funcionaliteit maken
-
 categorie

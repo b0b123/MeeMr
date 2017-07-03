@@ -3,12 +3,12 @@ var crypto = require('crypto')
 
 module.exports = {
 	create: function(params, callback) {
-		this.save(params, function(data) {
+		this.save(params, false, function(data) {
 			callback(data)
 		})
 	},
 	
-	save: function(params, callback) {
+	save: function(params, update, callback) {
 		var minPassLength = 4;
 		
 		//Validation
@@ -26,12 +26,28 @@ module.exports = {
 		params.name = params.name.toLowerCase()
 		params.pass = encryptPass(params.name, params.pass)
 		
-		db.User.create(params).then(user => {
-			callback({ user: user })
+		if(!update) {
+			db.User.create(params).then(user => {
+				callback({ user: user })
+				
+			}).catch(function (err) {
+				callback({ err: "User is already registered" })
+			})
 			
-		}).catch(function (err) {
-			callback({ err: "User is already registered" })
-		})
+		} else {			
+			this.read(params.name, function(user) {
+				params.oldPass = encryptPass(params.name, params.oldPass)
+				
+				if(params.oldPass != user.pass) {
+					callback({ err: "Old password is incorrect" })
+					return
+				}
+				
+				user.updateAttributes(params).then(function() {
+					callback({ })
+				})
+			})
+		}
 	},
 	
 	read: function(name, callback) {
@@ -44,6 +60,12 @@ module.exports = {
 		})
 	},
 	
+	changePass: function(params, callback) {
+		var session = this.getSession(params.token)
+		
+		this.save({ name: session.name, oldPass: params.oldPass, pass: params.newPass }, true, function(data) { callback(data) })
+	},
+	
 	checkLogin: function(params, callback) {
 		params.name = params.name.toLowerCase()
 		var pass = encryptPass(params.name, params.pass)
@@ -53,7 +75,7 @@ module.exports = {
 		})
 	},
 	
-	createSession: function(req, params, id) {
+	createSession: function(req, params, id) {		
 		req.session.name = params.name
 		req.session.userId = id
 		req.session.token = req.session.id
@@ -61,8 +83,8 @@ module.exports = {
 		this.store[req.session.token] = req.session
 	},
 	
-	getSession: function(id) {
-		return store[id]
+	getSession: function(token) {
+		return this.store[token]
 	}
 }
 

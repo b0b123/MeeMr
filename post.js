@@ -8,6 +8,9 @@ module.exports = {
 	},
 	
 	save: function(params, callback) {
+		params.upvotes = 0
+		params.downvotes = 0
+		
 		db.Post.create(params).then(post => {
 			console.log('Saved ' + post.id)
 			
@@ -66,5 +69,40 @@ module.exports = {
 				})
 			}
 		})
+	},
+	
+	updateVotes: function(id, callback) {
+		db.Vote.findAndCountAll({
+			where: {
+				postId: id,
+				upvote: 1
+			}
+		}).then(upvoteResult => {
+			var upvotes = upvoteResult.count
+			
+			db.Vote.findAndCountAll({
+				where: {
+					postId: id,
+					upvote: 0
+				}
+			}).then(downvoteResult => {
+				var downvotes = downvoteResult.count
+			
+				db.Post.findOne({
+					where: {
+						id: id
+					}
+					
+				}).then(post => {
+					post.updateAttributes({
+						upvotes: upvotes,
+						downvotes: downvotes
+						
+					}).then(function() {
+						callback({ })
+					})
+				})
+			});
+		});
 	}
 }

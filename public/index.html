@@ -35,18 +35,20 @@
                         <div class="col-md-11 col-sm-12 text-left text-left-xs text-left-sm">
                             <div class="bar__module">
                                 <ul class="menu-horizontal text-left">
-                                    <li>
-                                        <span class="dropdown__trigger"><a id="recentbtn" href="#recent" data-toggle="tab">Recent</a></span>
-               
-                                    </li>
-                                    
+								<div class="dropdown">
+								  <button class="btn btn--sm btn--primary type--uppercase dropdown-toggle" style="padding:0.5em;" type="button" data-toggle="dropdown"><span id="currentPostSort">Search</span>
+								  <span class="caret"></span></button>
+								  <ul style="padding:0.5em;" class="dropdown-menu">
+									<li><span class="dropdown__trigger"><a id="recentbtn" href="#recent" data-toggle="tab">Recent</a></span></li>
+									<li><span class="dropdown__trigger"><a id="hotbtn" href="#hot" data-toggle="tab">Hot</a></span></li>
+								  </ul>
+								</div>
                                 </ul>
                             </div>
                             <div id="uploadbtn" class="bar__module" style='display: none;'>
                                 <ul class="menu-horizontal text-left">
                                     <li>
                                         <span class="dropdown__trigger"><a href="#upload" data-toggle="tab">Upload</a></span>
-               
                                     </li>
                                     
                                 </ul>
@@ -66,7 +68,7 @@
                                 </a>
 								<a id="greetuser" class="btn btn--sm btn--primary type--uppercase" data-toggle="tab" href="#account" style='display: none;'>
                                     <span class="btn__text">
-                                        Boe
+                                        [username]
                                     </span>
                                 </a>
 								<a id="logoutbtn" class="btn btn--sm type--uppercase" style='display: none;'>
@@ -93,9 +95,13 @@
       <div id="recent" class="template tab-pane active">
         <h1>Recent</h1>
 		<div class="col-sm-8 col-sm-offset-2 boxed boxed--lg boxed--border" id="recentPost"></div>
-		<div class="col-sm-8 col-sm-offset-2 boxed boxed--lg boxed--border" id="recentPost2"></div>
       </div>
 
+	  <div id="hot" class="template tab-pane">
+        <h1>Hot</h1>
+		<div class="col-sm-8 col-sm-offset-2 boxed boxed--lg boxed--border" id="hotPost"></div>
+      </div>
+	  
 	  <div id="upload" class="template tab-pane">
         <h1>Upload</h1>
 		<form id="uploadForm">
@@ -118,7 +124,18 @@
 	  
       <div id="account" class="template tab-pane">
         <h1>Account</h1>
-		<p1>TODO</p1>
+		<div>
+			<h3><b>Username:</b> <p id="username"></p></h3>
+		</div>
+		<br>
+		<form>
+			<h3><b>Change password:</b></h3>
+			<div><h4>Old password:</h4> <input name="oldPass" type="password"/></div>
+			<div><h4>New password:</h4> <input name="newPass" type="password"/></div>
+			<div><h4>Confirm new password:</h4> <input name="cnewPass" type="password"/></div>
+			<div id="changePassSubmit" class="btn btn-success" style='margin-top:10px;'>Change</div>
+		</form>
+
       </div>
 	  
 		<div id="signin" class="template tab-pane">
