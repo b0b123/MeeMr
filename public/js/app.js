@@ -10,13 +10,16 @@ $(function() {
 		}).done(function(r) {
 			session = r
 			
-			if(typeof(session.token) != 'undefined') {
+			if(typeof(session.name) != 'undefined') {
 				login()
 				
 			} else {
 				//Tutorial
 				fancyModal("Welcome! Scroll down or click the image to find new spicy memes! (Click to dismiss)", "#337ab7")
 			}
+			
+			//Onload behaviour 
+			$("#recentbtn")[0].click()
 		})
 	}
 	
@@ -48,7 +51,7 @@ $(function() {
 		}).done(function(r) {
 			fancyModal("Logout successful", "green")
 			
-			$("#recentbtn")[0].click()
+			loadSession()
 		})
 	}
 	
@@ -180,9 +183,6 @@ $(function() {
 			}
 		})
     })
-
-	//Onload behaviour 
-	$("#recentbtn")[0].click()
 	
 	//Zooming using cross-browser compatible scroll event listening
 	var mousewheelevt = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel"; // FF doesn't recognize mousewheel as of FF3.x
@@ -213,7 +213,7 @@ function renderPost(selector, post) {
 		return
 	}
 	
-	var loggedIn = typeof(session.token) != 'undefined'
+	var loggedIn = typeof(session.name) != 'undefined'
 	
 	var upvoteBtn = "<div class='btn btn-success' onclick='upvote(this)'>Upvote (" + post.upvotes + ")</div>"
 	var downvoteBtn = "<div class='btn btn-danger' onclick='downvote(this)'>Downvote (" + post.downvotes + ")</div>"
@@ -252,6 +252,7 @@ function getNextPost(sort, search, callback) {
 	$.ajax({
 		url: "/nextpost",
 		data: {
+			token: session.token,
 			sort: sort,
 			search: search
 		}

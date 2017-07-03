@@ -18,7 +18,7 @@ var upload = multer({ storage: storage })
 
 module.exports = function(app) {	
 	//Creating new posts
-	app.post('/post/create', function(req, res) {		
+	app.post('/post/create', function(req, res) {
 		if(typeof(req.session.userId) == 'undefined') {
 			returnJSON(res, { err: "Not logged in" })
 			return
@@ -65,14 +65,17 @@ module.exports = function(app) {
 	
 	//Get next post
 	app.get('/nextpost', function (req, res) {
+		var token = req.query.token
 		var sort = req.query.sort
 		var search = req.query.search
+				
+		var session = user.getSession(token)
 		
 		//If search and sort requirements are still the same, continue in feed, else start at the start of the feed
-		if(typeof(req.session.lastSort) == 'undefined' || req.session.lastSort != sort || typeof(req.session.lastSearch) == 'undefined' || req.session.lastSearch != search) {
-			req.session.currentIndex = 0
+		if(typeof(session.lastSort) == 'undefined' || session.lastSort != sort || typeof(session.lastSearch) == 'undefined' || session.lastSearch != search) {
+			session.currentIndex = 0
 		} else {
-			req.session.currentIndex += 1
+			session.currentIndex += 1
 		}
 		
 		var order;
@@ -92,15 +95,15 @@ module.exports = function(app) {
 			}
 			
 		}).then(posts => {
-			if(posts.length == 0 || posts.length <= req.session.currentIndex) {
+			if(posts.length == 0 || posts.length <= session.currentIndex) {
 				returnJSON(res, { err: "No posts found" })
 				return
 			}
 			
-			returnPost(res, posts[req.session.currentIndex].id)
+			returnPost(res, posts[session.currentIndex].id)
 			
-			req.session.lastSort = sort
-			req.session.lastSearch = search
+			session.lastSort = sort
+			session.lastSearch = search
 		})
 	})
 	
@@ -166,6 +169,8 @@ module.exports = function(app) {
 	
 	//Get user session
 	app.get('/user/session', function(req, res) {
+		user.createGenericSession(req)
+		
 		returnJSON(res, { name: req.session.name, token: req.session.token })
 	})
 	

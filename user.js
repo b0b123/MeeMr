@@ -75,7 +75,13 @@ module.exports = {
 		})
 	},
 	
-	createSession: function(req, params, id) {		
+	createGenericSession: function(req) {
+		req.session.token = req.session.id
+		
+		this.store[req.session.token] = req.session
+	},
+	
+	createSession: function(req, params, id) {
 		req.session.name = params.name
 		req.session.userId = id
 		req.session.token = req.session.id
