@@ -1,7 +1,7 @@
-#MeeMr
+# MeeMr
 Meme sharing website
 
-#Resources
+# Resources
 https://scotch.io/tutorials/use-expressjs-to-get-url-and-post-parameters
 http://api.jquery.com/jquery.ajax/
 https://www.npmjs.com/package/jsonfile
