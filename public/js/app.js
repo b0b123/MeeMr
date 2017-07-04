@@ -15,11 +15,11 @@ $(function() {
 				
 			} else {
 				//Tutorial
-				fancyModal("Welcome! Scroll down or click the image to find new spicy memes! (Click to dismiss)", "#337ab7")
+				fancyModal("Welcome! Scroll down or click the image to find new memes! (Click to dismiss)", "#337ab7")
 			}
 			
 			//Onload behaviour 
-			$("#recentbtn")[0].click()
+			$(".feedbtn")[0].click()
 		})
 	}
 	
@@ -30,7 +30,7 @@ $(function() {
 		$("#logoutbtn").show()
 		$("#uploadbtn").show()
 		
-		$("#recentbtn")[0].click()
+		$(".feedbtn")[0].click()
 		
 		$("#greetuser").find("span").text("Welcome back, " + session.name + "!")
 		$("#username").text(session.name)
@@ -70,25 +70,23 @@ $(function() {
 		logout();
 	})
 	
-	$("#recentbtn").click(function() {
-		$("#currentPostSort").text("Recent")
+	$(".feedbtn").click(function() {
+		var sort = $(this).text()
+				
+		$("#currentPostSort").text(sort)
+		$("#feedTitle").text(sort)
 		
-		getNextPost("recent", "", function(post) {
-			renderPost("#recentPost", post)
-		})
+		nextPost(false, "#post")
 	})
 	
-	$("#hotbtn").click(function() {
-		$("#currentPostSort").text("Hot")
-		
-		getNextPost("hot", "", function(post) {
-			renderPost("#hotPost", post)
-		})
+	$('#searchbar').keypress(function (e) {
+		if (e.which == 13) {
+			nextPost(false, "#post")
+			return false
+		}
 	})
 	
-	$('#postSubmit').click(function() {
-		$("#newPostStatus").text("File is uploading...")
-		
+	$('#postSubmit').click(function() {		
 		$.ajax({
 			url: "/post/create",
 			method: "POST",
@@ -98,7 +96,11 @@ $(function() {
 			processData: false
 			
 		}).done(function(r) {
-			fancyModal(JSON.stringify(r), "green")
+			if(typeof(r.err) != 'undefined') {
+				fancyModal("Upload failed: " + r.err, "red")
+			} else {
+				fancyModal("Your post was uploaded successfully", "green")
+			}
 		})
     })
 	
@@ -155,7 +157,7 @@ $(function() {
 		})
     })
 	
-	$('#changePassSubmit').click(function() {	
+	$('#changePassSubmit').click(function() {
 		var form = $(this).parent()
 		var oldPass = form.find("input[name=oldPass]").val()
 		var newPass = form.find("input[name=newPass]").val()
@@ -201,15 +203,18 @@ $(function() {
 			up = e.detail < 0;
 		}
 		
-		if(!up) {
-			e.preventDefault()
-		}
+		e.preventDefault()
+		nextPost(up, "#post")
 	}
 })
 
 function renderPost(selector, post) {
 	if(typeof(post.err) != 'undefined') {
-		$(selector).html("<h1 style='color:green'><center><b>Congratulations!</b><br>You have finally reached the end of the internet! There's nothing more to see, no more links to visit. You've done it all.</center></h1>")
+		if(post.top) {
+			$(selector).html("<h1 style='color:red'><center><b>¡ʎɐʍ ƃuoɹM</b></center></h1>")			
+		} else {
+			$(selector).html("<h1 style='color:green'><center><b>Congratulations!</b><br>You have finally reached the end of the internet! There's nothing more to see, no more links to visit. You've done it all.</center></h1>")
+		}
 		return
 	}
 	
@@ -220,7 +225,7 @@ function renderPost(selector, post) {
 	var upvoteView = "<h4 style='color:green;'>" + post.upvotes + " upvotes</h4>"
 	var downvoteView = "<h4 style='color:red;'>" + post.downvotes + " downvotes</h4>"
 	
-	var post = "<div class='post' name='" + post.id + "'><h2 class='postTitle'><b>" + post.title + "</b></h2><img src='img/" + post.id + "'/><div>" + (loggedIn ? upvoteBtn : upvoteView) + (loggedIn ? downvoteBtn : downvoteView) + "</div></div>"
+	var post = "<div class='post' name='" + post.id + "'><h2 class='postTitle'><b>" + post.title + "</b></h2><img onclick='nextPost(false, \"#post\")' src='img/" + post.id + "'/><div>" + (loggedIn ? upvoteBtn : upvoteView) + (loggedIn ? downvoteBtn : downvoteView) + "</div></div>"
 
 	$(selector).html(post)
 }
@@ -248,13 +253,14 @@ function getRandomPost(callback) {
 	})
 }
 
-function getNextPost(sort, search, callback) {
+function getNextPost(up, callback) {
 	$.ajax({
 		url: "/nextpost",
 		data: {
 			token: session.token,
-			sort: sort,
-			search: search
+			sort: $("#currentPostSort").text(),
+			search: $("#searchbar").val(),
+			up: up
 		}
 		
 	}).done(function(r) {
@@ -262,9 +268,9 @@ function getNextPost(sort, search, callback) {
 	})
 }
 
-function nextPost(selector) {
+function nextPost(up, selector) {
 	$(selector).slideUp(function() {
-		getRandomPost(function(post) {
+		getNextPost(up, function(post) {
 			renderPost(selector, post)
 			$(selector).slideDown()
 		})

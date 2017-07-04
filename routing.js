@@ -28,10 +28,15 @@ module.exports = function(app) {
 		
 		uploadFile(req, res, function(err) {
 			if(err) {
-				console.log(err)
 				returnJSON(res, { err: "Error uploading file" })
+			} else if(typeof(req.file) == 'undefined') {
+				returnJSON(res, { err: "Error uploading file" })
+			} else if(typeof(req.body.title) == 'undefined' || req.body.title.trim().length == 0) {
+				returnJSON(res, { err: "Please set a title" })
 				
 			} else {
+				req.body.title = escapeHTML(req.body.title)
+			
 				post.create(req.body, function(post) {
 					fs.rename(req.file.path, 'public/img/' + post.id, function(err) { })
 
@@ -68,14 +73,15 @@ module.exports = function(app) {
 		var token = req.query.token
 		var sort = req.query.sort
 		var search = req.query.search
-				
+		var up = req.query.up
+		
 		var session = user.getSession(token)
 		
 		//If search and sort requirements are still the same, continue in feed, else start at the start of the feed
 		if(typeof(session.lastSort) == 'undefined' || session.lastSort != sort || typeof(session.lastSearch) == 'undefined' || session.lastSearch != search) {
 			session.currentIndex = 0
 		} else {
-			session.currentIndex += 1
+			session.currentIndex += (up == "true" ? -1 : 1)
 		}
 		
 		var order;
@@ -95,8 +101,16 @@ module.exports = function(app) {
 			}
 			
 		}).then(posts => {
-			if(posts.length == 0 || posts.length <= session.currentIndex) {
-				returnJSON(res, { err: "No posts found" })
+			if(posts.length == 0 || posts.length <= session.currentIndex || session.currentIndex < 0) {
+				if(posts.length <= session.currentIndex) {
+					session.currentIndex = posts.length
+					returnJSON(res, { err: "No posts found", top: false })
+				}
+				if(session.currentIndex < 0) {
+					session.currentIndex = -1
+					returnJSON(res, { err: "No posts found", top: true })
+				}
+				
 				return
 			}
 			
@@ -171,11 +185,18 @@ module.exports = function(app) {
 	app.get('/user/session', function(req, res) {
 		user.createGenericSession(req)
 		
-		returnJSON(res, { name: req.session.name, token: req.session.token })
+		returnJSON(res, { name: (typeof(req.session.name) != 'undefined' ? escapeHTML(req.session.name) : undefined), token: req.session.token })
 	})
 	
 	function returnJSON(res, json) {
 		res.setHeader('Content-Type', 'application/json')
 		res.send(json)
 	}
+}
+
+function escapeHTML(s) { 
+    return s.replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
 }

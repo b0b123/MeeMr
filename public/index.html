@@ -39,10 +39,17 @@
 								  <button class="btn btn--sm btn--primary type--uppercase dropdown-toggle" style="padding:0.5em;" type="button" data-toggle="dropdown"><span id="currentPostSort">Search</span>
 								  <span class="caret"></span></button>
 								  <ul style="padding:0.5em;" class="dropdown-menu">
-									<li><span class="dropdown__trigger"><a id="recentbtn" href="#recent" data-toggle="tab">Recent</a></span></li>
-									<li><span class="dropdown__trigger"><a id="hotbtn" href="#hot" data-toggle="tab">Hot</a></span></li>
+									<li><span class="dropdown__trigger"><a class="feedbtn" href="#feed" data-toggle="tab">Recent</a></span></li>
+									<li><span class="dropdown__trigger"><a class="feedbtn" href="#feed" data-toggle="tab">Hot</a></span></li>
 								  </ul>
 								</div>
+                                </ul>
+                            </div>
+							<div class="bar__module">
+                                <ul class="menu-horizontal text-left">
+                                    <li>
+                                        <span class="dropdown__trigger"><input type="text" placeholder="Search" id="searchbar"></input></span>
+                                    </li>
                                 </ul>
                             </div>
                             <div id="uploadbtn" class="bar__module" style='display: none;'>
@@ -50,12 +57,11 @@
                                     <li>
                                         <span class="dropdown__trigger"><a href="#upload" data-toggle="tab">Upload</a></span>
                                     </li>
-                                    
                                 </ul>
                             </div>
 
                             <!--end module-->
-                            <div class="bar__module">
+                            <div class="bar__module pull-right">
                                 <a id="registerbtn" class="btn btn--sm type--uppercase" data-toggle="tab" href="#register">
                                     <span class="btn__text">
                                         Register
@@ -92,14 +98,9 @@
 
     <div class="container tab-content">
 
-      <div id="recent" class="template tab-pane active">
-        <h1>Recent</h1>
-		<div class="col-sm-8 col-sm-offset-2 boxed boxed--lg boxed--border" id="recentPost"></div>
-      </div>
-
-	  <div id="hot" class="template tab-pane">
-        <h1>Hot</h1>
-		<div class="col-sm-8 col-sm-offset-2 boxed boxed--lg boxed--border" id="hotPost"></div>
+      <div id="feed" class="template tab-pane active">
+        <h1 id="feedTitle"></h1>
+		<div class="col-sm-8 col-sm-offset-2 boxed boxed--lg boxed--border" id="post"></div>
       </div>
 	  
 	  <div id="upload" class="template tab-pane">
@@ -110,7 +111,7 @@
 			<ul class="list-inline">
 
 <li>    <label class="btn btn-default btn-file">
-        Kies een bestand <input id="newPostFile" name="file" type="file" accept="image/*" style="display: none;">
+        Choose a file <input id="newPostFile" name="file" type="file" accept="image/*" style="display: none;">
     </label></li>
 			  
 			  <li><div id="newPostFileRemove" class="btn btn-danger">x</div></li>
