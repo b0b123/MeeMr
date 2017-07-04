@@ -33,10 +33,13 @@ module.exports = function(app) {
 				returnJSON(res, { err: "Error uploading file" })
 			} else if(typeof(req.body.title) == 'undefined' || req.body.title.trim().length == 0) {
 				returnJSON(res, { err: "Please set a title" })
+			} else if(typeof(req.body.category) == 'undefined' || req.body.category.trim().length == 0) {
+				returnJSON(res, { err: "Please set a category" })
 				
 			} else {
 				req.body.title = escapeHTML(req.body.title)
-			
+				req.body.category = escapeHTML(req.body.category)
+				
 				post.create(req.body, function(post) {
 					fs.rename(req.file.path, 'public/img/' + post.id, function(err) { })
 
@@ -95,8 +98,13 @@ module.exports = function(app) {
 		db.Post.findAll({
 			order: order,
 			where: {
-				title: {
-					$like: "%" + search + "%"
+				$or: {
+					title: {
+						$like: "%" + search + "%"
+					},
+					category: {
+						$like: "%" + search + "%"
+					}
 				}
 			}
 			
@@ -123,13 +131,13 @@ module.exports = function(app) {
 	
 	function returnPost(res, id) {
 		post.read(id, function(obj) {
-			returnJSON(res, { id: id, title: obj.title, upvotes: obj.upvotes, downvotes: obj.downvotes })
+			returnJSON(res, { id: id, title: obj.title, category: obj.category, upvotes: obj.upvotes, downvotes: obj.downvotes })
 		})
 	}
 	
 	//Vote on post
 	app.post('/vote', function(req, res) {		
-		if(typeof(user.store[req.body.token]) == 'undefined') {
+		if(typeof(user.store[req.body.token]) == 'undefined' || typeof(user.store[req.body.token].name) == 'undefined') {
 			returnJSON(res, { err: "Not logged in" })
 			return
 		}

@@ -4,6 +4,7 @@ const sequelize = new Sequelize('mysql://root@localhost:3306/meemr') // mysql://
 module.exports = {
 	Post: sequelize.define('post', {
 		title: Sequelize.STRING,
+		category: Sequelize.STRING,
 		upvotes: Sequelize.INTEGER,
 		downvotes: Sequelize.INTEGER
 	}),

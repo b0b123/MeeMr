@@ -32,8 +32,7 @@ $(function() {
 		
 		$(".feedbtn")[0].click()
 		
-		$("#greetuser").find("span").text("Welcome back, " + session.name + "!")
-		$("#username").text(session.name)
+		$(".username").text(session.name)
 	}
 	
 	function logout() {
@@ -79,9 +78,9 @@ $(function() {
 		nextPost(false, "#post")
 	})
 	
-	$('#searchbar').keypress(function (e) {
+	$('#searchbar').keypress(function(e) {
 		if (e.which == 13) {
-			nextPost(false, "#post")
+			$(".feedbtn")[0].click()
 			return false
 		}
 	})
@@ -187,12 +186,12 @@ $(function() {
     })
 	
 	//Zooming using cross-browser compatible scroll event listening
-	var mousewheelevt = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel"; // FF doesn't recognize mousewheel as of FF3.x
+	var mousewheelevt = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel" // FF doesn't recognize mousewheel as of FF3.x
 	
 	if (document.attachEvent) { // if IE (and Opera depending on user setting)
-		document.attachEvent("on"+mousewheelevt, function(e) { onScrollEvent(e); });
+		document.attachEvent("on"+mousewheelevt, function(e) { onScrollEvent(e); })
 	} else if (document.addEventListener) { // WC3 browsers
-		document.addEventListener(mousewheelevt, function(e) { onScrollEvent(e); }, false);
+		document.addEventListener(mousewheelevt, function(e) { onScrollEvent(e); }, false)
 	}
 	
 	function onScrollEvent(e) {
@@ -224,8 +223,9 @@ function renderPost(selector, post) {
 	var downvoteBtn = "<div class='btn btn-danger' onclick='downvote(this)'>Downvote (" + post.downvotes + ")</div>"
 	var upvoteView = "<h4 style='color:green;'>" + post.upvotes + " upvotes</h4>"
 	var downvoteView = "<h4 style='color:red;'>" + post.downvotes + " downvotes</h4>"
+	var categoryView = "<h4 style='color:grey;' class='pull-right'>Category: " + post.category + "</h4>"
 	
-	var post = "<div class='post' name='" + post.id + "'><h2 class='postTitle'><b>" + post.title + "</b></h2><img onclick='nextPost(false, \"#post\")' src='img/" + post.id + "'/><div>" + (loggedIn ? upvoteBtn : upvoteView) + (loggedIn ? downvoteBtn : downvoteView) + "</div></div>"
+	var post = "<div class='post' name='" + post.id + "'><h2 class='postTitle'><b>" + post.title + "</b></h2><img onclick='nextPost(false, \"#post\")' src='img/" + post.id + "'/><div>" + (loggedIn ? upvoteBtn : upvoteView) + (loggedIn ? downvoteBtn : downvoteView) + categoryView + "</div></div>"
 
 	$(selector).html(post)
 }
@@ -268,13 +268,19 @@ function getNextPost(up, callback) {
 	})
 }
 
+var canNextPost = true
 function nextPost(up, selector) {
-	$(selector).slideUp(function() {
-		getNextPost(up, function(post) {
-			renderPost(selector, post)
-			$(selector).slideDown()
+	if(canNextPost) {
+		canNextPost = false
+		
+		$(selector).slideUp(function() {
+			getNextPost(up, function(post) {
+				renderPost(selector, post)
+				$(selector).slideDown()
+				canNextPost = true
+			})
 		})
-	})
+	}
 }
 
 //Voting
