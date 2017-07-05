@@ -3,11 +3,13 @@ package com.meemr.meemr;
 import android.app.Activity;
 import android.content.Context;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +35,9 @@ import org.json.JSONObject;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+
+import static com.meemr.meemr.R.drawable.ic_login;
+import static com.meemr.meemr.R.drawable.ic_logout;
 
 /**
  * Created by stefa on 27-6-2017.
@@ -80,12 +85,13 @@ public class LoginActivity extends Fragment {
                                     token = response.getString("token");
                                     System.out.println(token);
                                     ((MainActivity) getActivity()).setToken(token);
+                                    ((MainActivity) getActivity()).setLoggedin(true);
+                                    System.out.println("tokenfix : logintoken = "+ token);
                                     NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
-                                    System.out.println("hier moet navigation view komen" + navigationView);
                                     Menu menu = navigationView.getMenu();
                                     MenuItem menuItem = menu.findItem(R.id.nav_login);
-                                    System.out.println("hier moet login komen: " + menuItem);
                                     menuItem.setTitle("Log out");
+                                    menuItem.setIcon(ContextCompat.getDrawable(getActivity(), ic_logout));
                                     navheader = getActivity().findViewById(R.id.navheadertext);
                                     navheader.setText("Howdy, "+userInput.getText().toString());
 
@@ -96,6 +102,9 @@ public class LoginActivity extends Fragment {
 
                                 } catch (JSONException e) {
                                     e.printStackTrace();
+
+                                        Snackbar.make(getView().findViewById(R.id.passInput), "Username or password is wrong", Snackbar.LENGTH_LONG)
+                                                .setAction("Action", null).show();
                                 }
                             }
                         }, new Response.ErrorListener() {

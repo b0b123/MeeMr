@@ -4,7 +4,7 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_register"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_register"
             android:title="Register" />
         <item
             android:id="@+id/nav_recent"
@@ -16,7 +16,7 @@
             android:title="Surprise me" />
         <item
             android:id="@+id/nav_login"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_login"
             android:title="Log in" />
     </group>
 

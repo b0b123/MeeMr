@@ -1,5 +1,6 @@
 package com.meemr.meemr;
 
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,6 +30,9 @@ import org.w3c.dom.Text;
 
 import java.util.HashMap;
 
+import static com.meemr.meemr.R.drawable.ic_cancel_black_24dp;
+import static com.meemr.meemr.R.drawable.ic_refresh_black_24dp;
+
 /**
  * Created by stefa on 27-6-2017.
  */
@@ -36,43 +41,61 @@ public class RecentActivity extends Fragment {
     TextView results;
     ImageView imgResult;
     TextView points;
+    FloatingActionButton downvoteButton;
+    FloatingActionButton upvoteButton;
+    FloatingActionButton nextButton;
+    String token = "";
+    String type = "recent";
+    String direction = "false";
 
-    String randompostURL = "http://10.0.2.2:3000/randompost";
     String data = "";
     RequestQueue requestQueue;
     String postId;
 
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        //token = ((MainActivity) getActivity()).getToken();
         return inflater.inflate(R.layout.content_recent, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+
+        super.onViewCreated(view, savedInstanceState);
+        Snackbar.make(getView().findViewById(R.id.memeview), "When logged in, swipe left to downvote, right to upvote", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
+        downvoteButton = (FloatingActionButton) getView().findViewById(R.id.fabdown);
+        upvoteButton= (FloatingActionButton) getView().findViewById(R.id.fabup);
+        nextButton = (FloatingActionButton) getView().findViewById(R.id.fabcancel);
+        if(!((MainActivity) getActivity()).isLoggedin()){
+            downvoteButton.setVisibility(View.INVISIBLE);
+            upvoteButton.setVisibility(View.INVISIBLE);
+            nextButton.setImageResource(ic_refresh_black_24dp);
+        } else{
+            downvoteButton.setVisibility(View.VISIBLE);
+            upvoteButton.setVisibility(View.VISIBLE);
+            nextButton.setImageResource(ic_cancel_black_24dp);
+        }
         getActivity().getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
         );
-        super.onViewCreated(view, savedInstanceState);
         imgResult = (ImageView) getView().findViewById(R.id.memeview);
-        getRequest();
-        FloatingActionButton fabdown = (FloatingActionButton) getView().findViewById(R.id.fabdown);
-        fabdown.setOnClickListener(new View.OnClickListener() {
+        downvoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 vote("0");
                 getRequest();
             }
         });
-        FloatingActionButton fabcancel = (FloatingActionButton) getView().findViewById(R.id.fabcancel);
-        fabcancel.setOnClickListener(new View.OnClickListener() {
+        nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getRequest();
             }
         });
-        FloatingActionButton fabup = (FloatingActionButton) getView().findViewById(R.id.fabup);
-        fabup.setOnClickListener(new View.OnClickListener() {
+        upvoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 vote("1");
@@ -81,37 +104,76 @@ public class RecentActivity extends Fragment {
         });
         imgResult.setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
             public void onSwipeTop() {
+                direction="true";
+                getRequest();
             }
             public void onSwipeRight() {
-                Snackbar.make(getView().findViewById(R.id.memeview), "Upvoted", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if(((MainActivity) getActivity()).isLoggedin()) {
+                    Snackbar.make(getView().findViewById(R.id.memeview), "Upvoted", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
                 vote("1");
                 getRequest();
             }
             public void onSwipeLeft() {
                 vote("0");
-                Snackbar.make(getView().findViewById(R.id.memeview), "Downvoted", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if(((MainActivity) getActivity()).isLoggedin()) {
+                    Snackbar.make(getView().findViewById(R.id.memeview), "Downvoted", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
                 getRequest();
             }
             public void onSwipeBottom() {
-                Snackbar.make(getView().findViewById(R.id.memeview), "Crippling depression", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                direction="false";
+                getRequest();
             }
-
         });
+        if(((MainActivity) getActivity()).getToken()==""){
+            initSession();
+        } else {
+            getRequest();
+        }
+    }
+
+    public void initSession(){
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        String url = "http://koekjesclan.nl:3000/user/session";
+        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            token=response.getString("token");
+                            ((MainActivity) getActivity()).setToken(token);
+                            getRequest();
+                        } catch (JSONException e){
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        VolleyLog.e("Error: ", error.getMessage());
+                    }
+                }
+        );
+
+// add it to the RequestQueue
+        requestQueue.add(getRequest);
     }
 
     public void vote(String type){
-        String token = "";
         try{
             token = ((MainActivity) getActivity()).getToken();
         } catch (Exception e){
-            System.out.println("Helaas pindakaas.");
+            System.out.println("Skipping vote, user not logged in.");
         }
-        if(token!=""){
+        if(((MainActivity) getActivity()).isLoggedin()){
             RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-            final String URL = "http://10.0.2.2:3000/vote";
+            final String URL = "http://koekjesclan.nl:3000/vote";
             // Post params to be sent to the server
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("token", token);
@@ -123,6 +185,7 @@ public class RecentActivity extends Fragment {
                         @Override
                         public void onResponse(JSONObject response) {
                             try {
+                                token = ((MainActivity) getActivity()).getToken();
                                 VolleyLog.v("Response:%n %s", response.toString(4));
 
                             } catch (JSONException e) {
@@ -138,52 +201,73 @@ public class RecentActivity extends Fragment {
             requestQueue.add(req);
         }
     }
+    public void doRecentSearch(){
+
+    }
 
     public void getRequest(){
-        // Creates the Volley request queue
-        requestQueue = Volley.newRequestQueue(getActivity());
+        String token = ((MainActivity) getActivity()).getToken();
+        type = ((MainActivity) getActivity()).getType();
+        String randompostURL;
 
-        // Casts results into the TextView found within the main layout XML with id jsonData
-        results = (TextView) getView().findViewById(R.id.text);
-        imgResult = (ImageView) getView().findViewById(R.id.memeview);
-        points = (TextView) getView().findViewById(R.id.pointLabel);
+        if(type.equals("preferred")){
+            results.setText("W.I.P.");
+            new DownloadImageTask((ImageView) getView().findViewById(R.id.memeview))
+                    .execute("http://koekjesclan.nl:3000/img/future");
+            points.setText("∞ points");
+        }else {
+            randompostURL = "http://koekjesclan.nl:3000/nextpost?up="+direction+"&token=" + token + "&sort=" + type + "&search=";
+            // Creates the Volley request queue
+            requestQueue = Volley.newRequestQueue(getActivity());
 
-
-        // Creating the JsonArrayRequest class called arrayreq, passing the required parameters
-        //JsonURL is the URL to be fetched from
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, randompostURL, null, new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try{
-                            results.setText("Response: " + response.toString());
-                            results.setText(response.getString("title"));
-                            int upvotes = Integer.parseInt(response.getString("upvotes"));
-                            int downvotes = Integer.parseInt(response.getString("downvotes"));
-                            postId = response.getString("id");
-                            points.setText(upvotes-downvotes + " Points");
-                            System.out.println("WE DEDEN IETS!");
-                            Animation myFadeInAnimation = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.fadein);
-                            imgResult.startAnimation(myFadeInAnimation); //Set animation to your ImageView
-                            new DownloadImageTask((ImageView) getView().findViewById(R.id.memeview))
-                                    .execute("http://10.0.2.2:3000/img/"+response.getString("id"));
+            // Casts results into the TextView found within the main layout XML with id jsonData
+            results = (TextView) getView().findViewById(R.id.text);
+            final TextView catView = (TextView) getView().findViewById(R.id.catView);
+            imgResult = (ImageView) getView().findViewById(R.id.memeview);
+            points = (TextView) getView().findViewById(R.id.pointLabel);
 
 
-                        } catch(Exception ex){
-                            ex.printStackTrace();
+            // Creating the JsonArrayRequest class called arrayreq, passing the required parameters
+            //JsonURL is the URL to be fetched from
+            JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                    (Request.Method.GET, randompostURL, null, new Response.Listener<JSONObject>() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                results.setText("Response: " + response.toString());
+                                results.setText(response.getString("title"));
+                                catView.setText("Cat.: "+ response.getString("category"));
+                                int upvotes = Integer.parseInt(response.getString("upvotes"));
+                                int downvotes = Integer.parseInt(response.getString("downvotes"));
+                                postId = response.getString("id");
+                                points.setText(upvotes - downvotes + " Points");
+                                Animation myFadeInAnimation = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.fadein);
+                                imgResult.startAnimation(myFadeInAnimation); //Set animation to your ImageView
+                                new DownloadImageTask((ImageView) getView().findViewById(R.id.memeview))
+                                        .execute("http://10.0.2.2:3000/img/" + response.getString("id"));
+
+
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                                results.setText("Je bent bij het einde van de maymays, gefeliciteerd!!1!1!");
+                                new DownloadImageTask((ImageView) getView().findViewById(R.id.memeview))
+                                        .execute("http://10.0.2.2:3000/img/end");
+                                points.setText("∞ points");
+                                catView.setText("Such end much dead");
+                            }
+
                         }
+                    }, new Response.ErrorListener() {
 
-                    }
-                }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            System.out.println(error);
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        System.out.println(error);
-
-                    }
-                });
-        // Adds the JSON array request "arrayreq" to the request queue
-        requestQueue.add(jsObjRequest);
+                        }
+                    });
+            // Adds the JSON array request "arrayreq" to the request queue
+            requestQueue.add(jsObjRequest);
+        }
     }
 }
